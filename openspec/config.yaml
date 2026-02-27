@@ -1,0 +1,31 @@
+schema: spec-driven
+
+context: |
+  Tech Stack:
+  - Language: Go 1.21+
+  - CLI: github.com/urfave/cli/v2
+  - Protocols: RCON, WebRCON, TELNET
+  - Config: YAML (rcon.yaml)
+  - Testing: github.com/stretchr/testify
+
+  Architecture:
+  - `cmd/gorcon`: Main entry point.
+  - `internal/executor`: Core application logic, handles CLI flags and the execution loop.
+  - `internal/config`: Configuration loading and session management.
+  - `internal/logger`: Command/response logging.
+
+  Conventions:
+  - Standard Go layout.
+  - Logic is decoupled from CLI presentation where possible (interfaces like `ExecuteCloser`).
+  - Interactive mode vs. single-command mode logic is centralized in the executor.
+
+rules:
+  proposal:
+    - Always specify if a change affects the CLI interface (flags/commands).
+    - Identify if protocol-specific changes are required (RCON vs WebRCON).
+  design:
+    - Maintain the `ExecuteCloser` interface for new connection types.
+    - Ensure any new dependency is added to `go.mod`.
+  tasks:
+    - Include test coverage updates for logic changes in `internal/`.
+    - Verify interactive mode behavior for any changes to the execution loop.
