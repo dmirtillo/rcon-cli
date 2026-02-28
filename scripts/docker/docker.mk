@@ -9,7 +9,7 @@ docker-clean:
 docker-build:
 	docker build -f build/docker/Dockerfile \
       --build-arg VERSION="${VERSION}" \
-      -t outdead/rcon .
+      -t ghcr.io/dmirtillo/rcon-cli .
 
 	docker rmi ${IMAGES} 2> /dev/null ||:
 
@@ -17,4 +17,4 @@ docker-build:
 docker-run:
 	docker run -it --rm \
       -v $(CURDIR)/rcon-local.yaml:/rcon.yaml \
-      outdead/rcon ./rcon -c rcon.yaml -e $(e) $(command)
+      ghcr.io/dmirtillo/rcon-cli ./rcon -c rcon.yaml -e $(e) $(command)
