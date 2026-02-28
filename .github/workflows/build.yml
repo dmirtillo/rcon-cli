@@ -15,13 +15,13 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
       with:
         go-version-file: 'go.mod'
-
-    - name: Check out code
-      uses: actions/checkout@v4
 
     # https://github.com/golangci/golangci-lint-action
     - name: Lint
@@ -35,13 +35,13 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
       with:
         go-version-file: 'go.mod'
-
-    - name: Check out code
-      uses: actions/checkout@v4
 
     - name: Get dependencies
       run: make deps
@@ -56,13 +56,13 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
       with:
         go-version-file: 'go.mod'
-
-    - name: Check out code
-      uses: actions/checkout@v4
 
     - name: Get dependencies
       run: make deps
