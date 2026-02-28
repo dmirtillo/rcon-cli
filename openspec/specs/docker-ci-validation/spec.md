@@ -22,15 +22,19 @@ The CI pipeline SHALL scan the final Docker image for known security vulnerabili
 - **THEN** if vulnerabilities with severity `CRITICAL` or `HIGH` are found, the pipeline fails
 
 ### Requirement: Atomic Publish
-The CI pipeline SHALL only push images to the registry if all validation steps (lint, smoke test, security scan) have passed.
+The CI pipeline SHALL only push images to the registry if all validation steps (lint, smoke test, security scan) AND all upstream Go CI jobs (Lint, Test, Build) have passed successfully.
 
 #### Scenario: Smoke test fails
 - **WHEN** the runtime verification fails
 - **THEN** the subsequent `Build and publish` step is skipped or aborted
 
 #### Scenario: All validations pass
-- **WHEN** all validation steps succeed
+- **WHEN** all validation steps succeed AND upstream Go jobs succeed
 - **THEN** the Docker artifact is published to GHCR (`ghcr.io/dmirtillo/rcon-cli`) using the provided `GITHUB_TOKEN` for authentication
+
+#### Scenario: Upstream Go jobs fail
+- **WHEN** the `Lint`, `Test`, or `Build` job fails
+- **THEN** the `docker-release` job does not execute at all
 
 ### Requirement: Docker Builder Go Version
 The Dockerfile builder stage MUST use a Go runtime version of 1.22+ to compile the application consistently with the local and CI pipelines.

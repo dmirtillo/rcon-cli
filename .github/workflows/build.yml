@@ -11,8 +11,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-    name: Build
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
     - name: Set up Go 1.x
@@ -20,25 +20,28 @@ jobs:
       with:
         go-version: 1.26.x
 
-    - name: Check out code into the Go module directory
+    - name: Check out code
       uses: actions/checkout@v4
 
     # https://github.com/golangci/golangci-lint-action
     - name: Lint
       uses: golangci/golangci-lint-action@v9
       with:
-        # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
         version: v2.10.1
-
-        # Optional: working directory, useful for monorepos
-        # working-directory: somedir
-
-        # Optional: golangci-lint command line arguments.
-        # args: --issues-exit-code=0
         args: --config=.golangci.yml
-
-        # Optional: show only new issues if it's a pull request. The default value is `false`.
         only-new-issues: false
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v5
+      with:
+        go-version: 1.26.x
+
+    - name: Check out code
+      uses: actions/checkout@v4
 
     - name: Get dependencies
       run: make deps
@@ -49,18 +52,34 @@ jobs:
     - name: Update coverage report
       uses: ncruces/go-coverage-report@main
 
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v5
+      with:
+        go-version: 1.26.x
+
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Get dependencies
+      run: make deps
+
     - name: Build
       run: make build
 
   docker-release:
     name: Docker Release
+    needs: [lint, test, build]
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
