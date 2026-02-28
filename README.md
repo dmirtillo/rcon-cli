@@ -31,7 +31,7 @@ See [Changelog](CHANGELOG.md) for release details
 
 ### Docker
 ```bash
-docker pull outdead/rcon
+docker pull ghcr.io/dmirtillo/rcon-cli
 ```
 
 ## Usage
