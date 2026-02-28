@@ -110,7 +110,7 @@ jobs:
             ghcr.io/dmirtillo/rcon-cli:test
 
       - name: Run smoke test
-        run: docker run --rm ghcr.io/dmirtillo/rcon-cli:test --help
+        run: docker run --rm ghcr.io/dmirtillo/rcon-cli:test /rcon --help
 
       - name: Scan image for vulnerabilities
         uses: aquasecurity/trivy-action@master
