@@ -49,9 +49,6 @@ jobs:
     - name: Test
       run: make test
 
-    - name: Update coverage report
-      uses: ncruces/go-coverage-report@main
-
   build:
     name: Build
     runs-on: ubuntu-latest
