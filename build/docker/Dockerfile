@@ -1,6 +1,7 @@
 # Stage 1 - Build the code.
 FROM golang:1.26-alpine as builder
 
+# hadolint ignore=DL3018
 RUN apk --no-cache add --update gcc musl-dev
 
 ARG VERSION=docker
@@ -13,8 +14,8 @@ COPY go.sum .
 RUN CGO_ENABLED=1 go build -ldflags "-s -w -X main.ServiceVersion=${VERSION}" -o gorcon ./cmd/gorcon/main.go
 
 # Stage 2 - Create image.
-FROM alpine as runner
-MAINTAINER Pavel Korotkiy <paul.korotkiy@gmail.com>
+FROM alpine:3.19 as runner
+LABEL maintainer="Pavel Korotkiy <paul.korotkiy@gmail.com>"
 
 COPY LICENSE /
 COPY README.md /
