@@ -1,131 +1,156 @@
-version: 2
+version: "2"
 run:
   issues-exit-code: 1
   tests: true
-
-output:
-  print-issued-lines: true
-  print-linter-name: true
-
-issues:
-  exclude-dirs:
-    - vendor/
-  exclude-files:
-    - ".*_test.go$"
-  exclude:
-    - "Version`? is a global variable" # gochecknoglobals
-    - "cognitive complexity \\d+ of func `Interactive` is high" # gocognit
-    - "are|is missing in" # exhaustivestruct # v1.33
-  exclude-rules:
-    - source: "^//\\s*go:generate\\s"
-      linters: [ lll ]
-    - source: "(noinspection|TODO)"
-      linters: [ godot ]
-    - source: "//noinspection"
-      linters: [ gocritic ]
-    - path: "_test\\.go"
-      linters:
-        - errcheck
-        - staticcheck
-        - bodyclose
-        - dupl
-        - funlen
-        - goconst
-        - gosec
-        - noctx
-        - wrapcheck
-
-# SEE: https://golangci-lint.run/usage/configuration/
-linters-settings:
-  cyclop:
-    max-complexity: 12
-    package-average: 0.0
-    skip-tests: true
-  dupl:
-    threshold: 200
-  errcheck:
-    check-type-assertions: false
-    check-blank: false
-  funlen:
-    lines: 70
-    statements: 40
-  gocognit:
-    min-complexity: 20
-  goconst:
-    min-len: 3
-    min-occurrences: 2
-  gocritic:
-    enabled-tags:
-      - performance
-      - style
-      - experimental
-    disabled-checks:
-      - paramTypeCombine
-  gocyclo:
-    min-complexity: 15
-  godox:
-    keywords:
-      - "BUG"
-      - "FIXME"
-  goimports:
-    local-prefixes: github.com/golangci/golangci-lint
-  govet:
-    enable-all: true
-    disable:
-      - fieldalignment
-    settings:
-      shadow:
-        strict: true
-  lll:
-    line-length: 120
-  tagliatelle:
-    case:
-      use-field-name: true
-      rules:
-        json: snake
-        yaml: snake
-  misspell:
-    locale: US
-  nakedret:
-    max-func-lines: 30
-  unparam:
-    check-exported: false
-  unused:
-    check-exported: false
-  whitespace:
-    multi-if: false
-    multi-func: false
-  wrapcheck:
-    ignoreSigs:
-      - .Errorf(
-      - errors.New(
-      - errors.Unwrap(
-      - .Wrap(
-      - .Wrapf(
-      - .WithMessage(
-      - .WithMessagef(
-      - .WithStack(
-      - telnet.DialInteractive(
-      - Close()
-    ignorePackageGlobs:
-      - encoding/*
-      - github.com/pkg/*
-  wsl:
-    strict-append: true
-    allow-assign-and-call: true
-    allow-multiline-assign: true
-    allow-cuddle-declarations: true
-    allow-trailing-comment: true
-    force-case-trailing-whitespace: 0
-
 linters:
-  enable-all: true
+  default: all
   disable:
-    - rowserrcheck # disabled because of generics
-    - sqlclosecheck # disabled because of generics
-    - wastedassign # disabled because of generics
-    - varnamelen # checks that the length of a variable's name matches its scope
-    - exhaustruct
-    - depguard
-    - tagalign
     - copyloopvar
+    - depguard
+    - exhaustruct
+    - rowserrcheck
+    - sqlclosecheck
+    - tagalign
+    - varnamelen
+    - wastedassign
+    - wsl
+    - wsl_v5
+    - noinlineerr
+    - gosec
+  settings:
+    cyclop:
+      max-complexity: 12
+      package-average: 0
+    dupl:
+      threshold: 200
+    errcheck:
+      check-type-assertions: false
+      check-blank: false
+    funlen:
+      lines: 70
+      statements: 40
+    gocognit:
+      min-complexity: 20
+    goconst:
+      min-len: 3
+      min-occurrences: 2
+    gocritic:
+      disabled-checks:
+        - paramTypeCombine
+      enabled-tags:
+        - performance
+        - style
+        - experimental
+    gocyclo:
+      min-complexity: 15
+    godox:
+      keywords:
+        - BUG
+        - FIXME
+    govet:
+      disable:
+        - fieldalignment
+      enable-all: true
+      settings:
+        shadow:
+          strict: true
+    lll:
+      line-length: 120
+    misspell:
+      locale: US
+    nakedret:
+      max-func-lines: 30
+    tagliatelle:
+      case:
+        rules:
+          json: snake
+          yaml: snake
+        use-field-name: true
+    unparam:
+      check-exported: false
+    whitespace:
+      multi-if: false
+      multi-func: false
+    wrapcheck:
+      ignore-sigs:
+        - .Errorf(
+        - errors.New(
+        - errors.Unwrap(
+        - .Wrap(
+        - .Wrapf(
+        - .WithMessage(
+        - .WithMessagef(
+        - .WithStack(
+        - telnet.DialInteractive(
+        - Close()
+      ignore-package-globs:
+        - encoding/*
+        - github.com/pkg/*
+    wsl:
+      strict-append: true
+      allow-assign-and-call: true
+      allow-multiline-assign: true
+      force-case-trailing-whitespace: 0
+      allow-trailing-comment: true
+      allow-cuddle-declarations: true
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - lll
+        source: ^//\s*go:generate\s
+      - linters:
+          - godot
+        source: (noinspection|TODO)
+      - linters:
+          - gocritic
+        source: //noinspection
+      - linters:
+          - bodyclose
+          - dupl
+          - errcheck
+          - funlen
+          - goconst
+          - gosec
+          - noctx
+          - staticcheck
+          - wrapcheck
+        path: _test\.go
+      - path: (.+)\.go$
+        text: Version`? is a global variable
+      - path: (.+)\.go$
+        text: cognitive complexity \d+ of func `Interactive` is high
+      - path: (.+)\.go$
+        text: are|is missing in
+      - linters:
+          - cyclop
+        path: (.+)_test\.go
+    paths:
+      - .*_test.go$
+      - vendor/
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/golangci/golangci-lint
+  exclusions:
+    generated: lax
+    paths:
+      - .*_test.go$
+      - vendor/
+      - third_party$
+      - builtin$
+      - examples$
