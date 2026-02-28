@@ -1,4 +1,4 @@
-include build/docker/.env
+-include build/docker/.env
 export
 
 IMAGES := `docker images --filter "dangling=true" -q --no-trunc`
