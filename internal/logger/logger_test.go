@@ -22,8 +22,8 @@ func TestOpenFile(t *testing.T) {
 
 	// Positive test create new log file.
 	t.Run("create new log file", func(t *testing.T) {
-		os.Mkdir(logDir, 0700)
-		defer os.RemoveAll(logDir)
+		_ = os.Mkdir(logDir, 0700)
+		defer func() { _ = os.RemoveAll(logDir) }()
 
 		file, err := logger.OpenFile(logPath)
 		assert.NotNil(t, file)
@@ -40,7 +40,7 @@ func TestWrite(t *testing.T) {
 -admin
 -testuser`
 
-	defer os.Remove(logName)
+	defer func() { _ = os.Remove(logName) }()
 
 	// Test skip log. No logs is available.
 	t.Run("skip log", func(t *testing.T) {

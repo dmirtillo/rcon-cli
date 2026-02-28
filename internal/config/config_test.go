@@ -20,8 +20,8 @@ func TestNewConfig(t *testing.T) {
 	t.Run("no errors yaml", func(t *testing.T) {
 		configFileName := "rcon-test-local.yaml"
 		stringBody := fmt.Sprintf(ConfigLayoutYAML, config.DefaultConfigEnv, "", "", DefaultTestLogName, "")
-		createFile(configFileName, stringBody)
-		defer os.Remove(configFileName)
+		_ = createFile(configFileName, stringBody)
+		defer func() { _ = os.Remove(configFileName) }()
 
 		expected := config.Config{
 			"default": config.Session{Address: "", Password: "", Log: "rcon-test.log"},
@@ -35,8 +35,8 @@ func TestNewConfig(t *testing.T) {
 	t.Run("no errors json", func(t *testing.T) {
 		configFileName := "rcon-test-local.json"
 		stringBody := fmt.Sprintf(ConfigLayoutJSON, config.DefaultConfigEnv, "", "", DefaultTestLogName, "")
-		createFile(configFileName, stringBody)
-		defer os.Remove(configFileName)
+		_ = createFile(configFileName, stringBody)
+		defer func() { _ = os.Remove(configFileName) }()
 
 		expected := config.Config{
 			config.DefaultConfigEnv: config.Session{Address: "", Password: "", Log: DefaultTestLogName},
@@ -70,8 +70,8 @@ func TestNewConfig(t *testing.T) {
 	t.Run("file is incorrect", func(t *testing.T) {
 		configFileName := "rcon-test-local.yaml"
 		stringBody := fmt.Sprintf("address: \"%s\"\n  password: \"%s\"\n  log: \"%s\"", "", "password", DefaultTestLogName)
-		createFile(configFileName, stringBody)
-		defer os.Remove(configFileName)
+		_ = createFile(configFileName, stringBody)
+		defer func() { _ = os.Remove(configFileName) }()
 
 		cfg, err := config.NewConfig(configFileName)
 		assert.EqualError(t, err, "parse file: yaml: line 1: did not find expected key")
@@ -82,8 +82,8 @@ func TestNewConfig(t *testing.T) {
 	t.Run("unsupported file extension", func(t *testing.T) {
 		configFileName := "unsupported-local.ini"
 		stringBody := "[genera]\addr="
-		createFile(configFileName, stringBody)
-		defer os.Remove(configFileName)
+		_ = createFile(configFileName, stringBody)
+		defer func() { _ = os.Remove(configFileName) }()
 
 		cfg, err := config.NewConfig(configFileName)
 		assert.EqualError(t, err, "parse file: unsupported file extension .ini")
@@ -94,8 +94,8 @@ func TestNewConfig(t *testing.T) {
 	t.Run("validation failed", func(t *testing.T) {
 		configFileName := "rcon-test-local.json"
 		stringBody := fmt.Sprintf(ConfigLayoutJSON, config.DefaultConfigEnv, "", "", DefaultTestLogName, "pigeon post")
-		createFile(configFileName, stringBody)
-		defer os.Remove(configFileName)
+		_ = createFile(configFileName, stringBody)
+		defer func() { _ = os.Remove(configFileName) }()
 
 		cfg, err := config.NewConfig(configFileName)
 		assert.EqualError(t, err, "config validation error: unsupported type in default environment")

@@ -16,9 +16,9 @@ func main() {
 
 	if err := exec.Run(os.Args); err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		exec.Close()
+		_ = exec.Close()
 		os.Exit(1)
 	}
 
-	exec.Close()
+	_ = exec.Close()
 }

@@ -150,6 +150,8 @@ Use `-T` argument to specify dial and execute timeout:
 ## Contribute
 If you think that you have found a bug, create an issue and indicate your operating system, platform, and the game on which the error reproduced. Also describe what you were doing so that the error could be reproduced.
 
+For detailed instructions on local development, building, and our CI processes, please see our [Contributing Guide](CONTRIBUTING.md).
+
 ## License
 MIT License, see [LICENSE](LICENSE)
 

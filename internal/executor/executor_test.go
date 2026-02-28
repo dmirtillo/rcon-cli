@@ -30,9 +30,9 @@ func handlersRCON(c *rcontest.Context) {
 	switch c.Request().Body() {
 	case "help":
 		responseBody := "Can I help you?"
-		rcon.NewPacket(rcon.SERVERDATA_RESPONSE_VALUE, c.Request().ID, responseBody).WriteTo(c.Conn())
+		_, _ = rcon.NewPacket(rcon.SERVERDATA_RESPONSE_VALUE, c.Request().ID, responseBody).WriteTo(c.Conn())
 	default:
-		rcon.NewPacket(rcon.SERVERDATA_RESPONSE_VALUE, c.Request().ID, "unknown command").WriteTo(c.Conn())
+		_, _ = rcon.NewPacket(rcon.SERVERDATA_RESPONSE_VALUE, c.Request().ID, "unknown command").WriteTo(c.Conn())
 	}
 }
 
@@ -40,13 +40,13 @@ func handlersTELNET(c *telnettest.Context) {
 	switch c.Request() {
 	case "", "exit":
 	case "help":
-		c.Writer().WriteString(fmt.Sprintf("2020-11-14T23:09:20 31220.643 "+telnet.ResponseINFLayout, c.Request(), c.Conn().RemoteAddr()) + telnet.CRLF)
-		c.Writer().WriteString("Can I help you?" + telnet.CRLF)
+		_, _ = c.Writer().WriteString(fmt.Sprintf("2020-11-14T23:09:20 31220.643 "+telnet.ResponseINFLayout, c.Request(), c.Conn().RemoteAddr()) + telnet.CRLF)
+		_, _ = c.Writer().WriteString("Can I help you?" + telnet.CRLF)
 	default:
-		c.Writer().WriteString(fmt.Sprintf("*** ERROR: unknown command '%s'", c.Request()) + telnet.CRLF)
+		_, _ = c.Writer().WriteString(fmt.Sprintf("*** ERROR: unknown command '%s'", c.Request()) + telnet.CRLF)
 	}
 
-	c.Writer().Flush()
+	_ = c.Writer().Flush()
 }
 
 const MockCommandStatusResponseTextWebRCON = `hostname: Rust Server [DOCKER]
@@ -68,7 +68,7 @@ func handlersWebRCON() http.Handler {
 			return
 		}
 
-		defer ws.Close()
+		defer func() { _ = ws.Close() }()
 
 		var response websocket.Message
 
@@ -147,7 +147,7 @@ func TestExecute(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(nil, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Execute(&w, &config.Session{Address: "", Password: "password"}, "help")
 		assert.Error(t, err)
@@ -158,7 +158,7 @@ func TestExecute(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(nil, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Execute(&w, &config.Session{Address: serverRCON.Addr(), Password: ""}, "help")
 		assert.Error(t, err)
@@ -169,7 +169,7 @@ func TestExecute(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(nil, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Execute(&w, &config.Session{Address: serverRCON.Addr(), Password: "wrong"}, "help")
 		assert.Error(t, err)
@@ -180,7 +180,7 @@ func TestExecute(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(nil, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Execute(&w, &config.Session{Address: serverRCON.Addr(), Password: "password"}, "")
 		assert.Error(t, err)
@@ -192,7 +192,7 @@ func TestExecute(t *testing.T) {
 
 		bigCommand := make([]byte, 1001)
 		app := executor.NewExecutor(nil, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Execute(&w, &config.Session{Address: serverRCON.Addr(), Password: "password"}, string(bigCommand))
 		assert.Error(t, err)
@@ -203,7 +203,7 @@ func TestExecute(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(nil, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Execute(&w, &config.Session{Address: serverRCON.Addr(), Password: "password"}, "help", "unknown")
 		assert.NoError(t, err)
@@ -217,7 +217,7 @@ func TestExecute(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(nil, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Execute(&w, &config.Session{Address: serverTELNET.Addr(), Password: "password", Type: config.ProtocolTELNET}, "help", "unknown")
 		assert.NoError(t, err)
@@ -233,7 +233,7 @@ func TestExecute(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(nil, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Execute(&w, &config.Session{Address: serverWebRCON.Listener.Addr().String(), Password: "password", Type: config.ProtocolWebRCON}, "status")
 		assert.NoError(t, err)
@@ -247,10 +247,10 @@ func TestExecute(t *testing.T) {
 		w := bytes.Buffer{}
 
 		logFileName := "tmpfile.log"
-		defer os.Remove(logFileName)
+		defer func() { _ = os.Remove(logFileName) }()
 
 		app := executor.NewExecutor(nil, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Execute(&w, &config.Session{Address: serverRCON.Addr(), Password: "password", Log: logFileName}, "help")
 		assert.NoError(t, err)
@@ -300,7 +300,7 @@ func TestExecute(t *testing.T) {
 * unbanuser : Unban a player, use : /unbanuser \"username\"
 * voiceban : Block voice from user \"username\", use : /voiceban \"username\" -value, ex /voiceban \"rj\" -true (could be -false)`
 
-				n = strings.Replace(n, "List of server commands :", "List of server commands : ", -1)
+				n = strings.ReplaceAll(n, "List of server commands :", "List of server commands : ")
 
 				return n
 			}()
@@ -308,7 +308,7 @@ func TestExecute(t *testing.T) {
 			w := bytes.Buffer{}
 
 			app := executor.NewExecutor(nil, &w, "")
-			defer app.Close()
+			defer func() { _ = app.Close() }()
 
 			err := app.Execute(&w, &config.Session{Address: addr, Password: password}, "help")
 			assert.NoError(t, err)
@@ -452,9 +452,9 @@ of your current perk levels in a CSV file next to it.
  xuireload => Access xui related functions such as reinitializing a window group, opening a window group
  zip => Control zipline settings`
 
-				n = strings.Replace(n, "\n", "\r\n", -1)
-				n = strings.Replace(n, "some generic info\r\n", "some generic info\n", -1)
-				n = strings.Replace(n, "Also stores a list\r\n", "Also stores a list\n", -1)
+				n = strings.ReplaceAll(n, "\n", "\r\n")
+				n = strings.ReplaceAll(n, "some generic info\r\n", "some generic info\n")
+				n = strings.ReplaceAll(n, "Also stores a list\r\n", "Also stores a list\n")
 
 				return n
 			}()
@@ -462,7 +462,7 @@ of your current perk levels in a CSV file next to it.
 			w := bytes.Buffer{}
 
 			app := executor.NewExecutor(nil, &w, "")
-			defer app.Close()
+			defer func() { _ = app.Close() }()
 
 			err := app.Execute(&w, &config.Session{Address: addr, Password: password, Type: config.ProtocolTELNET}, "help")
 			assert.NoError(t, err)
@@ -482,7 +482,7 @@ of your current perk levels in a CSV file next to it.
 			w := bytes.Buffer{}
 
 			app := executor.NewExecutor(nil, &w, "")
-			defer app.Close()
+			defer func() { _ = app.Close() }()
 
 			err := app.Execute(&w, &config.Session{Address: addr, Password: password}, "status")
 			assert.NoError(t, err)
@@ -500,7 +500,7 @@ of your current perk levels in a CSV file next to it.
 			w := bytes.Buffer{}
 
 			app := executor.NewExecutor(nil, &w, "")
-			defer app.Close()
+			defer func() { _ = app.Close() }()
 
 			err := app.Execute(&w, &config.Session{Address: addr, Password: password, Type: config.ProtocolWebRCON}, "status")
 			assert.NoError(t, err)
@@ -538,7 +538,7 @@ func TestInteractive(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(&r, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Interactive(&r, &w, &config.Session{Address: serverRCON.Addr(), Password: "fake"})
 		assert.Error(t, err)
@@ -558,7 +558,7 @@ func TestInteractive(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(&r, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Interactive(&r, &w, &config.Session{Address: serverRCON.Addr(), Password: "password"})
 		assert.EqualError(t, err, "execute: command too long")
@@ -577,7 +577,7 @@ func TestInteractive(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(&r, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Interactive(&r, &w, &config.Session{})
 		assert.NoError(t, err)
@@ -596,7 +596,7 @@ func TestInteractive(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(&r, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Interactive(&r, &w, &config.Session{})
 		assert.NoError(t, err)
@@ -615,7 +615,7 @@ func TestInteractive(t *testing.T) {
 		w := bytes.Buffer{}
 
 		app := executor.NewExecutor(&r, &w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		err := app.Interactive(&r, &w, &config.Session{})
 		assert.NoError(t, err)
@@ -635,7 +635,7 @@ func TestNewExecutor(t *testing.T) {
 		w := &bytes.Buffer{}
 
 		app := executor.NewExecutor(r, w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		args := os.Args[0:1]
 		args = append(args, "-a="+serverRCON.Addr())
@@ -651,18 +651,18 @@ func TestNewExecutor(t *testing.T) {
 		configFileName := "rcon-test-local.yaml"
 		logFileName := "rcon-test.log"
 		stringBody := fmt.Sprintf(ConfigLayoutYAML, config.DefaultConfigEnv, serverRCON.Addr(), "password", logFileName, "")
-		createFile(configFileName, stringBody)
+		_ = createFile(configFileName, stringBody)
 
 		defer func() {
-			os.Remove(logFileName)
-			os.Remove(configFileName)
+			_ = os.Remove(logFileName)
+			_ = os.Remove(configFileName)
 		}()
 
 		r := &bytes.Buffer{}
 		w := &bytes.Buffer{}
 
 		app := executor.NewExecutor(r, w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		args := os.Args[0:1]
 		args = append(args, "-c="+configFileName)
@@ -677,18 +677,18 @@ func TestNewExecutor(t *testing.T) {
 		configFileName := "rcon-test-local.yaml"
 		logFileName := "rcon-test.log"
 		stringBody := fmt.Sprintf(ConfigLayoutYAML, config.DefaultConfigEnv, "", "", logFileName, "")
-		createFile(configFileName, stringBody)
+		_ = createFile(configFileName, stringBody)
 
 		defer func() {
-			os.Remove(logFileName)
-			os.Remove(configFileName)
+			_ = os.Remove(logFileName)
+			_ = os.Remove(configFileName)
 		}()
 
 		r := &bytes.Buffer{}
 		w := &bytes.Buffer{}
 
 		app := executor.NewExecutor(r, w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		args := os.Args[0:1]
 		// Hack to use os.Args[0] in go run
@@ -705,18 +705,18 @@ func TestNewExecutor(t *testing.T) {
 		configFileName := "rcon-test-local.yaml"
 		logFileName := "rcon-test.log"
 		stringBody := fmt.Sprintf(ConfigLayoutYAML, config.DefaultConfigEnv, serverRCON.Addr(), "", logFileName, "")
-		createFile(configFileName, stringBody)
+		_ = createFile(configFileName, stringBody)
 
 		defer func() {
-			os.Remove(logFileName)
-			os.Remove(configFileName)
+			_ = os.Remove(logFileName)
+			_ = os.Remove(configFileName)
 		}()
 
 		r := &bytes.Buffer{}
 		w := &bytes.Buffer{}
 
 		app := executor.NewExecutor(r, w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		args := os.Args[0:1]
 		// Hack to use os.Args[0] in go run
@@ -735,7 +735,7 @@ func TestNewExecutor(t *testing.T) {
 		w := &bytes.Buffer{}
 
 		app := executor.NewExecutor(r, w, "")
-		defer app.Close()
+		defer func() { _ = app.Close() }()
 
 		args := os.Args[0:1]
 		args = append(args, "-a="+serverRCON.Addr())

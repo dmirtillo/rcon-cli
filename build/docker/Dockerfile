@@ -1,5 +1,5 @@
 # Stage 1 - Build the code.
-FROM golang:1.21-alpine as builder
+FROM golang:1.26-alpine as builder
 
 RUN apk --no-cache add --update gcc musl-dev
 

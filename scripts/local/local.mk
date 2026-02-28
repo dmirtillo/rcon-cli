@@ -6,11 +6,23 @@ ifeq (compile, $(firstword $(MAKECMDGOALS)))
   $(eval $(RUN_ARGS):;@:)
 endif
 
+.PHONY: compile run deps test build lint
+
 compile:
 	sh scripts/local/compile.sh $(RUN_ARGS)
 
 run:
 	sh scripts/local/run.sh
 
+deps:
+	go mod download
+	go mod verify
+
+test:
+	go test -v ./...
+
+build:
+	go build -v ./cmd/gorcon
+
 lint:
-	golangci-lint run
+	go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.10.1 run --config=.golangci.yml

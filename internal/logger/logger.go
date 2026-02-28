@@ -63,7 +63,9 @@ func Write(name string, address string, request string, response string) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	line := fmt.Sprintf(DefaultLineFormat, time.Now().Format(DefaultTimeLayout), address, request, response)
 	if _, err = file.WriteString(line); err != nil {
