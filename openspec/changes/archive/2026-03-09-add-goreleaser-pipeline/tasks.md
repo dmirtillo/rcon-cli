@@ -27,6 +27,6 @@
 
 ## 5. Validation
 
-- [ ] 5.1 Push a test tag (e.g., `v0.11.0-rc1`) to verify the end-to-end pipeline.
-- [ ] 5.2 Verify binaries are attached to the release.
-- [ ] 5.3 Verify Docker image is pushed to GHCR with correct tags.
+- [x] 5.1 Push a test tag (e.g., `v0.11.0-rc1`) to verify the end-to-end pipeline.
+- [x] 5.2 Verify binaries are attached to the release.
+- [x] 5.3 Verify Docker image is pushed to GHCR with correct tags.
