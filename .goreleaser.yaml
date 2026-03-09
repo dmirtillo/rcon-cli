@@ -55,6 +55,7 @@ dockers:
     image_templates:
       - "ghcr.io/dmirtillo/rcon-cli:{{ .Version }}-amd64"
     dockerfile: build/docker/Dockerfile.goreleaser
+    use: buildx
     build_flag_templates:
       - "--platform=linux/amd64"
   - id: rcon-arm64
@@ -63,6 +64,7 @@ dockers:
     image_templates:
       - "ghcr.io/dmirtillo/rcon-cli:{{ .Version }}-arm64"
     dockerfile: build/docker/Dockerfile.goreleaser
+    use: buildx
     build_flag_templates:
       - "--platform=linux/arm64"
 
