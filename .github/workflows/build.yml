@@ -26,6 +26,8 @@ jobs:
     # https://github.com/golangci/golangci-lint-action
     - name: Lint
       uses: golangci/golangci-lint-action@v9
+      env:
+        NODE_OPTIONS: "--no-deprecation"
       with:
         version: v2.10.1
         install-mode: go-install
