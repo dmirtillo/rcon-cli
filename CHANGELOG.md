@@ -3,11 +3,19 @@ All notable changes to this project will be documented in this file.
 
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
-## [Unreleased]
+## [v0.11.0] - 2026-03-09
+### Added
+- Added automated release pipeline using GoReleaser.
+- Added support for multi-arch Docker builds (amd64, arm64).
+
+### Fixed
+- Fixed critical zlib vulnerability in Alpine 3.23 (CVE-2026-22184).
+
 ### Updated
 - Updated Go modules (go1.21).
 - Updated golang-ci linter (1.55.2).
 - Updated dependencies.
+- Updated Docker base image to Alpine 3.23.
 
 ## [v0.10.3] - 2023-03-11
 ### Added
