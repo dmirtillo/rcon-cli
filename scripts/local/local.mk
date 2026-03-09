@@ -6,10 +6,7 @@ ifeq (compile, $(firstword $(MAKECMDGOALS)))
   $(eval $(RUN_ARGS):;@:)
 endif
 
-.PHONY: compile run deps test build lint
-
-compile:
-	sh scripts/local/compile.sh $(RUN_ARGS)
+.PHONY: run deps test build lint
 
 run:
 	sh scripts/local/run.sh

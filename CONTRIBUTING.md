@@ -53,7 +53,19 @@ When you push code or open a Pull Request, GitHub Actions will trigger the `buil
     *   A test Docker image is built using `golang:1.26-alpine` as the builder.
     *   A smoke test is run (e.g., executing `--help` inside the built Alpine container).
     *   Trivy scans the image for `CRITICAL` or `HIGH` vulnerabilities.
-7.  **Publishing**: Only if *all* of the above validations pass, the Docker artifacts are built for `amd64` and `arm64/v8` platforms and published to GHCR.
+7.  **Publishing**: For PRs and branches, the image is only built for validation. When a tag (`v*`) is pushed, a separate `Release Pipeline` job using GoReleaser is triggered. This job automatically cross-compiles binaries, creates archives with SHA256 checksums, builds multi-arch Docker images, pushes them to GHCR, and attaches everything to a new GitHub Release.
+
+## Releasing
+
+We use [GoReleaser](https://goreleaser.com/) to automate the release process via GitHub Actions.
+
+To create a new release:
+1. Update `CHANGELOG.md` with the new changes under the appropriate version header.
+2. Commit your changes: `git commit -am "chore: release v0.11.0"`
+3. Tag the release: `git tag v0.11.0`
+4. Push the tag: `git push origin v0.11.0`
+
+The CI pipeline will handle the rest.
 
 ## Submitting Changes
 
