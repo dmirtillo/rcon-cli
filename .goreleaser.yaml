@@ -55,9 +55,9 @@ dockers_v2:
       - "{{ .Version }}"
       - "latest"
     dockerfile: build/docker/Dockerfile.goreleaser
-    goarch:
-      - amd64
-      - arm64
+    platforms:
+      - linux/amd64
+      - linux/arm64
 
 release:
   github:
