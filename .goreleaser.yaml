@@ -27,7 +27,7 @@ builds:
       - -s -w -X main.Version={{.Version}}
 
 archives:
-  - format: tar.gz
+  - formats: [ 'tar.gz' ]
     # this name template makes the OS and Arch compatible with the results of uname.
     name_template: >-
       {{ .ProjectName }}_
@@ -37,7 +37,7 @@ archives:
       {{- else }}{{ .Arch }}{{ end }}
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [ 'zip' ]
     files:
       - LICENSE
       - README.md
@@ -48,35 +48,16 @@ checksum:
   name_template: 'checksums.txt'
   algorithm: sha256
 
-dockers:
-  - id: rcon-amd64
-    goos: linux
-    goarch: amd64
-    image_templates:
-      - "ghcr.io/dmirtillo/rcon-cli:{{ .Version }}-amd64"
+dockers_v2:
+  - images:
+      - "ghcr.io/dmirtillo/rcon-cli"
+    tags:
+      - "{{ .Version }}"
+      - "latest"
     dockerfile: build/docker/Dockerfile.goreleaser
-    use: buildx
-    build_flag_templates:
-      - "--platform=linux/amd64"
-  - id: rcon-arm64
-    goos: linux
-    goarch: arm64
-    image_templates:
-      - "ghcr.io/dmirtillo/rcon-cli:{{ .Version }}-arm64"
-    dockerfile: build/docker/Dockerfile.goreleaser
-    use: buildx
-    build_flag_templates:
-      - "--platform=linux/arm64"
-
-docker_manifests:
-  - name_template: ghcr.io/dmirtillo/rcon-cli:{{ .Version }}
-    image_templates:
-      - ghcr.io/dmirtillo/rcon-cli:{{ .Version }}-amd64
-      - ghcr.io/dmirtillo/rcon-cli:{{ .Version }}-arm64
-  - name_template: ghcr.io/dmirtillo/rcon-cli:latest
-    image_templates:
-      - ghcr.io/dmirtillo/rcon-cli:{{ .Version }}-amd64
-      - ghcr.io/dmirtillo/rcon-cli:{{ .Version }}-arm64
+    goarch:
+      - amd64
+      - arm64
 
 release:
   github:
