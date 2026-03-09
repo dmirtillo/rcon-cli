@@ -17,6 +17,9 @@ RUN CGO_ENABLED=1 go build -ldflags "-s -w -X main.Version=${VERSION}" -o gorcon
 FROM alpine:3.23 as runner
 LABEL maintainer="Pavel Korotkiy <paul.korotkiy@gmail.com>"
 
+# hadolint ignore=DL3018
+RUN apk --no-cache add --update ca-certificates && apk --no-cache upgrade
+
 COPY LICENSE /
 COPY README.md /
 COPY CHANGELOG.md /
