@@ -14,7 +14,7 @@ COPY go.sum .
 RUN CGO_ENABLED=1 go build -ldflags "-s -w -X main.Version=${VERSION}" -o gorcon ./cmd/gorcon/main.go
 
 # Stage 2 - Create image.
-FROM alpine:3.19 as runner
+FROM alpine:3.23 as runner
 LABEL maintainer="Pavel Korotkiy <paul.korotkiy@gmail.com>"
 
 COPY LICENSE /
